@@ -56,7 +56,36 @@ public class RegistrationController {
         return "Bad User";
     }
 
+    @GetMapping("/resendVerifyToken")
+    public String resendVerificationToken(@RequestParam("token") String oldToken,
+                                          HttpServletRequest httpServletRequest) {
+
+        // generate token baru, karena oldToken sudah expired
+        // user belum sempat verifikasi token di email
+        // sehingga user harus generate token yang baru lagi
+        VerificationToken verificationToken = verificationTokenService.generateNewVerificationToken(oldToken);
+
+        // ambil data user dari verification token
+        User user = verificationToken.getUser();
+
+        // kirim ulang verifikasi token ke email user
+        resendVerificationTokenMail(
+                user,
+                applicationUrl(httpServletRequest),
+                verificationToken
+        );
+        // link verifikasi token berhasil dikirim
+        return "Verification Link Sent";
+    }
+
     private String applicationUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
+
+    private void resendVerificationTokenMail(User user, String applicationUrl, VerificationToken verificationToken) {
+        String url = applicationUrl + "/verifyRegistration?token=" + verificationToken.getToken();
+        // send verification email
+        log.info("Click the link to verify your account: {}", url);
+    }
+
 }
