@@ -4,7 +4,7 @@ import com.spring.client.entity.User;
 
 import java.util.Optional;
 
-public interface PasswordResetService {
+public interface PasswordResetTokenService {
 
     void createPasswordResetTokenForUser(User user, String token);
 
