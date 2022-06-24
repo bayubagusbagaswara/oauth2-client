@@ -10,9 +10,7 @@ import com.spring.client.service.VerificationTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -42,6 +40,20 @@ public class RegistrationController {
                 applicationUrl(httpServletRequest)
         ));
         return "Success Register User";
+    }
+
+    @GetMapping("/verifyRegistration")
+    public String verifyRegistration(@RequestParam("token") String token) {
+
+        // validasi token hasil register
+        String result = verificationTokenService.validateVerificationToken(token);
+
+        if (result.equalsIgnoreCase("valid")) {
+            // berhasil verifikasi, dan user berhasil register
+            return "User Verifies Successfully";
+        }
+        // gagal verifikasi token, dan user gagal register
+        return "Bad User";
     }
 
     private String applicationUrl(HttpServletRequest request) {
