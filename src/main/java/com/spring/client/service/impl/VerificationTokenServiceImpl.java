@@ -36,7 +36,8 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
 
         if (verificationToken == null) {
-            return "Verification Token is Invalid";
+            // Verification Token is Invalid
+            return "invalid";
         }
 
         User user = verificationToken.getUser();
@@ -44,12 +45,14 @@ public class VerificationTokenServiceImpl implements VerificationTokenService {
 
         if ((verificationToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             verificationTokenRepository.delete(verificationToken);
-            return "Verification Token is Expired";
+            // Verification Token is Expired
+            return "expired";
         }
 
         user.setEnabled(true);
         userRepository.save(user);
-        return "Verification Token is Valid";
+        // Verification Token is Valid
+        return "valid";
     }
 
     @Override
