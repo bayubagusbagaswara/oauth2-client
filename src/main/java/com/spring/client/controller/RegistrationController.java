@@ -125,6 +125,18 @@ public class RegistrationController {
         }
     }
 
+    @PostMapping("/changePassword")
+    public String changePassword(@RequestBody PasswordResetDTO passwordResetDTO) {
+        User user = userService.findUserByEmail(passwordResetDTO.getEmail());
+        // cek password lama
+        if (!passwordResetTokenService.checkIfValidOldPassword(user, passwordResetDTO.getOldPassword())) {
+            return "Invalid Old Password";
+        }
+
+        // Jika Old Password benar, maka kita akan simpan password baru
+        passwordResetTokenService.changePassword(user, passwordResetDTO.getNewPassword());
+        return "Password Change Successfully";
+    }
 
     private String applicationUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
