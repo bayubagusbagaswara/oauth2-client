@@ -6,4 +6,6 @@ import com.spring.client.entity.User;
 public interface UserService {
 
     User registerUser(UserDTO userDTO);
+
+    void saveVerificationTokenForUser(String token, User user);
 }
