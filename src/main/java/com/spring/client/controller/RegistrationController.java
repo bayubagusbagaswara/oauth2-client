@@ -1,5 +1,6 @@
 package com.spring.client.controller;
 
+import com.spring.client.dto.PasswordResetDTO;
 import com.spring.client.dto.UserDTO;
 import com.spring.client.entity.User;
 import com.spring.client.entity.VerificationToken;
@@ -13,6 +14,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -78,6 +80,30 @@ public class RegistrationController {
         return "Verification Link Sent";
     }
 
+    @PostMapping("/resetPassword")
+    public String resetPassword(@RequestBody PasswordResetDTO passwordResetDTO, HttpServletRequest httpServletRequest) {
+
+        // ambil data user by email
+        User user = userService.findUserByEmail(passwordResetDTO.getEmail());
+
+        String url = "";
+        // jika user tidak sama dengan null (alias ada datanya), maka lalukan reset password
+        // pertama, kita create token untuk reset password
+        // lalu, kita kirim token ke email melalui URL
+        if (user != null) {
+            String token = UUID.randomUUID().toString();
+            passwordResetTokenService.createPasswordResetTokenForUser(user, token);
+            url = passwordResetTokenMail(
+                    user,
+                    applicationUrl(httpServletRequest),
+                    token
+            );
+        }
+        return url;
+    }
+
+
+
     private String applicationUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
@@ -88,4 +114,14 @@ public class RegistrationController {
         log.info("Click the link to verify your account: {}", url);
     }
 
+
+    private String passwordResetTokenMail(User user, String applicationUrl, String token) {
+        String url =
+                applicationUrl
+                        + "/savePassword?token="
+                        + token;
+
+        log.info("Click the link to Reset your Password: {}", url);
+        return url;
+    }
 }
