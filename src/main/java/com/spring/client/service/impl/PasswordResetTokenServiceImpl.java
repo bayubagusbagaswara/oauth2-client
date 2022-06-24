@@ -39,7 +39,8 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
 
         if (passwordResetToken == null) {
-            return "Password Reset Token is Invalid";
+            // Token untuk reset password tidak valid
+            return "invalid";
         }
 
         User user = passwordResetToken.getUser();
@@ -47,10 +48,11 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
 
         if ((passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             passwordResetTokenRepository.delete(passwordResetToken);
-            return "Password Reset Token is Expired";
+            return "expired";
         }
 
-        return "Password Reset Token is Valid";
+        // token valid
+        return "valid";
     }
 
     @Override
