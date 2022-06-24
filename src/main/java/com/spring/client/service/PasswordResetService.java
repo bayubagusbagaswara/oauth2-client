@@ -11,4 +11,6 @@ public interface PasswordResetService {
     String validatePasswordResetToken(String token);
 
     Optional<User> getUserByPasswordResetToken(String token);
+
+    void changePassword(User user, String newPassword);
 }
