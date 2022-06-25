@@ -1,4 +1,4 @@
-
+#port berbeda dengan auth-server
 server:
   port: 8080
 
